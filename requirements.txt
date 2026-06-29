@@ -1,3 +1,7 @@
 pyTelegramBotAPI
 requests
 pandas
+pyTelegramBotAPI
+requests
+pandas
+flask
