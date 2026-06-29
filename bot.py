@@ -7,7 +7,7 @@ import os
 from flask import Flask
 
 # --- CONFIGURATION ---
-API_TOKEN = '8774381712:AAEHsnyXkoCB0ASKh_6EGUQHHTkf35fsR0o'
+API_TOKEN = '8774381712:AAGepJ_bG_ovvg9JfO6oHWU8lAXS_wugSe0'
 CHAT_ID = '1987515437'
 bot = telebot.TeleBot(API_TOKEN)
 
