@@ -5,3 +5,9 @@ pyTelegramBotAPI
 requests
 pandas
 flask
+pyTelegramBotAPI
+requests
+pandas
+numpy
+Flask
+websocket-client
