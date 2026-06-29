@@ -4,103 +4,102 @@ import pandas as pd
 import time
 import threading
 import os
+import numpy as np
 from flask import Flask
 
 # --- MASTER CONFIGURATION ---
 API_TOKEN = '8774381712:AAGepJ_bG_ovvg9JfO6oHWU8lAXS_wugSe0'
-CHAT_ID = '5126384362' # Aapki sahi numeric ID yahan update kar di hai
+CHAT_ID = '5126384362'
 bot = telebot.TeleBot(API_TOKEN)
 
-# --- 1. IMMORTAL WEB SERVER (RENDER SHIELD) ---
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "ETERNA SUPREME CORE IS ACTIVE."
+    return "ETERNA QUANTUM BRAIN ACTIVE."
 
 def run_web_server():
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
 
-# --- 2. THE GOD-LEVEL BRAIN (Volume + Momentum + Sentiment) ---
-def get_market_sentiment():
-    try:
-        response = requests.get("https://api.alternative.me/fng/", timeout=10).json()
-        return int(response['data'][0]['value'])
-    except:
-        return 50
-
-def get_supreme_signal(pair):
-    url = f"https://public.coindcx.com/market_data/candles?pair={pair.replace('/', '').lower()}&interval=15m&limit=30"
+# --- ADVANCED QUANTUM & MATHEMATICAL SCANNER ---
+def get_quantum_signals(pair):
+    url = f"https://public.coindcx.com/market_data/candles?pair={pair.replace('/', '').lower()}&interval=15m&limit=40"
     try:
         data = requests.get(url, timeout=10).json()
         df = pd.DataFrame(data)
-        
         df['close'] = df['close'].astype(float)
         df['volume'] = df['volume'].astype(float)
         
-        # Advanced Indicators
+        # 1. MATHEMATICAL PROBABILITY (Standard Deviation & Z-Score)
+        # Calculates how far price is stretched from mean - statistical extreme
+        df['mean'] = df['close'].rolling(window=20).mean()
+        df['std'] = df['close'].rolling(window=20).std()
+        df['z_score'] = (df['close'] - df['mean']) / df['std']
+        
+        # 2. PHYSICS QUANTUM MOMENTUM (Price Velocity)
+        # Tracking kinetic energy of price velocity over last 3 periods
+        velocity = df['close'].diff(3).iloc[-1]
+        
+        # 3. CLASSIC MOMENTUM FOR CONVERGENCE
         delta = df['close'].diff()
         gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
         loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
-        rs = gain / loss
-        df['rsi'] = 100 - (100 / (1 + rs))
+        df['rsi'] = 100 - (100 / (1 + (gain / loss)))
         
-        df['ema_20'] = df['close'].ewm(span=20, adjust=False).mean()
+        # Volume Spike Detector
+        avg_vol = df['volume'].rolling(window=20).mean().iloc[-1]
+        current_vol = df['volume'].iloc[-1]
         
-        # Volume Anomaly Detection
-        avg_volume = df['volume'].rolling(window=20).mean().iloc[-1]
-        current_volume = df['volume'].iloc[-1]
-        volume_spike = current_volume > (avg_volume * 1.5)
-        
-        current_price = df['close'].iloc[-1]
+        current_z = df['z_score'].iloc[-1]
         current_rsi = df['rsi'].iloc[-1]
-        ema_20 = df['ema_20'].iloc[-1]
-        sentiment = get_market_sentiment()
         
-        # SILENT SNIPER LOGIC (Ultra-Strict)
-        if current_rsi < 30 and current_price > ema_20 and volume_spike and sentiment > 20:
-            return f"🟢 GOD-BUY CONFIRMED\n💰 {pair} @ ${current_price}\n📊 RSI: {current_rsi:.1f} | 📈 Volume Spike Detected!\n🧠 Sentiment: {sentiment} (Whales Accumulating)"
+        # THE APEX TRADING CRITERIA (Ultra-Advanced Convergence)
+        if current_z < -2.0 and current_rsi < 28 and current_vol > (avg_vol * 1.6) and velocity > 0:
+            return f"🌌 **ETERNA QUANTUM BUY**\n💎 Asset: {pair}\n📈 Statistical Z-Score: {current_z:.2f} (Extreme Undervalued)\n⚡ Velocity Force: Positive\n📊 RSI: {current_rsi:.1f} | Whales Confirmed."
             
-        elif current_rsi > 70 and current_price < ema_20 and volume_spike and sentiment < 80:
-            return f"🔴 GOD-SELL CONFIRMED\n💰 {pair} @ ${current_price}\n📊 RSI: {current_rsi:.1f} | 📉 Volume Spike Detected!\n🧠 Sentiment: {sentiment} (Whales Dumping)"
+        elif current_z > 2.0 and current_rsi > 72 and current_vol > (avg_vol * 1.6) and velocity < 0:
+            return f"⚠️ **ETERNA QUANTUM SELL**\n💎 Asset: {pair}\n📉 Statistical Z-Score: {current_z:.2f} (Extreme Overvalued)\n⚡ Velocity Force: Negative\n📊 RSI: {current_rsi:.1f} | Market Exhausted."
             
     except Exception as e:
-        print(f"Neural Error on {pair}: {e}")
-        pass
+        print(f"Quantum Math Error: {e}")
     return None
 
-# --- 3. THE SILENT WATCHER (Auto-Pilot) ---
-def eterna_core():
-    print("🌌 ETERNA V16 SUPREME CORE ONLINE...")
-    try:
-        bot.send_message(CHAT_ID, "⚡ ETERNA V16 LAUNCHED.\n\nSilent Sniper Mode: ACTIVE.\nVolume Filter: ACTIVE.\n\n(Aapko ab sirf God-Level verified signals hi milenge. Faltu messages band kar diye gaye hain.)")
-    except Exception as e:
-        print(f"Failed to send welcome message: {e}")
+# --- CORE HEARTBEAT & AUTOMATION ---
+def eterna_quantum_core():
+    print("🌌 ETERNA V17 QUANTUM ENGINE STARTED...")
+    bot.send_message(CHAT_ID, "⚡ **ETERNA V17 SYSTEM RE-ENGINEERED** ⚡\n\n- Quantum Velocity Filter: ONLINE\n- Advanced Z-Score Probability: ACTIVE\n- 3-Hour Heartbeat Monitor: ARMED\n\n*System is scanning space-time market vectors in absolute silence.*")
     
     pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT']
+    scan_count = 0
+    last_heartbeat = time.time()
     
     while True:
         try:
             for pair in pairs:
-                signal = get_supreme_signal(pair)
+                signal = get_quantum_signals(pair)
                 if signal:
-                    bot.send_message(CHAT_ID, f"🔔 **ETERNA SUPREME ALERT** 🔔\n\n{signal}")
+                    bot.send_message(CHAT_ID, signal)
                     time.sleep(300)
+            
+            scan_count += 1
+            
+            # 3-Hour Heartbeat Logic (Bina system kamzor kiye assurance)
+            if time.time() - last_heartbeat >= 10800: # 10800 seconds = 3 hours
+                bot.send_message(CHAT_ID, f"🔄 **ETERNA HEARTBEAT REPORT**\nStatus: Secure & Online 🟢\nScans Performed in last 3h: {scan_count}\nVerdict: Market conditions monitored. Standing by for high-probability mathematical setup.")
+                last_heartbeat = time.time()
+                scan_count = 0
+                
         except Exception as e:
-            print(f"⚠️ ETERNA Core Recovering from shock: {e}")
+            print(f"Engine Core Shock Recovery: {e}")
             time.sleep(60)
             
-        time.sleep(300)
+        time.sleep(300) # Balanced Vector Scan Every 5 Minutes
 
-# --- IGNITION SEQUENCE ---
 if __name__ == "__main__":
     try:
         bot.delete_webhook()
     except:
         pass
-        
     threading.Thread(target=run_web_server, daemon=True).start()
-    threading.Thread(target=eterna_core, daemon=True).start()
-    
-    print("🌌 SYSTEM DEPLOYED. WAITING IN SHADOWS.")
+    threading.Thread(target=eterna_quantum_core, daemon=True).start()
     bot.infinity_polling(none_stop=True, timeout=60, long_polling_timeout=60)
