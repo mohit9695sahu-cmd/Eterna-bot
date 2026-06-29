@@ -1,27 +1,36 @@
-# ====================================================================
-# 🌌 ETERNA APEX v13.4: THE FORCE-FIX CLOUD CORE
-# ====================================================================
-
 import telebot
 import requests
 import pandas as pd
 import time
 import threading
+import os
+from flask import Flask
 
-# CONFIGURATION
+# --- CONFIGURATION ---
 API_TOKEN = '8774381712:AAEHsnyXkoCB0ASKh_6EGUQHHTkf35fsR0o'
-CHAT_ID = '1987515437' 
+CHAT_ID = '1987515437'
 bot = telebot.TeleBot(API_TOKEN)
 
-# 1. SENTIMENT ENGINE
+# --- 1. DUMMY WEB SERVER (Render ke liye) ---
+app = Flask(__name__)
+@app.route('/')
+def home():
+    return "ETERNA BOT IS LIVE AND IMMORTAL"
+
+def run_web_server():
+    # Render automatic PORT assign karta hai
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
+
+# --- 2. SENTIMENT ENGINE ---
 def get_market_sentiment():
     try:
-        response = requests.get("https://api.alternative.me/fng/").json()
+        response = requests.get("https://api.alternative.me/fng/", timeout=10).json()
         return int(response['data'][0]['value'])
     except:
         return 50
 
-# 2. ANALYSIS ENGINE
+# --- 3. ANALYSIS ENGINE ---
 def get_advanced_signal(pair):
     url = f"https://public.coindcx.com/market_data/candles?pair={pair.replace('/', '').lower()}&interval=5m&limit=20"
     try:
@@ -41,8 +50,9 @@ def get_advanced_signal(pair):
         pass
     return None, None
 
-# 3. AUTO-PILOT
+# --- 4. AUTO-PILOT ---
 def auto_pilot():
+    print("🚀 ETERNA V14 CORE ONLINE...")
     while True:
         try:
             for pair in ['BTC/USDT', 'ETH/USDT']:
@@ -53,14 +63,18 @@ def auto_pilot():
             print(f"⚠️ ETERNA Recovering: {e}")
         time.sleep(60)
 
-# STARTING THE SYSTEMS
+# --- STARTING THE SYSTEMS ---
 if __name__ == "__main__":
+    # Force clean connections
     try:
-        bot.delete_webhook() # Purane connection todne ka final tareeka
-        print("🌌 Webhook deleted successfully.")
+        bot.delete_webhook()
     except:
         pass
         
+    # Start Web Server
+    threading.Thread(target=run_web_server, daemon=True).start()
+    # Start Bot Logic
     threading.Thread(target=auto_pilot, daemon=True).start()
-    print("🌌 SYSTEM FULLY DEPLOYED.")
+    
+    print("🌌 SYSTEM FULLY DEPLOYED & IMMORTAL.")
     bot.infinity_polling(none_stop=True, interval=0, timeout=20)
