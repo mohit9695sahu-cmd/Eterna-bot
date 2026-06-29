@@ -6,22 +6,22 @@ import threading
 import os
 from flask import Flask
 
-# --- CONFIGURATION ---
+# --- MASTER CONFIGURATION ---
 API_TOKEN = '8774381712:AAGepJ_bG_ovvg9JfO6oHWU8lAXS_wugSe0'
 CHAT_ID = '1987515437'
 bot = telebot.TeleBot(API_TOKEN)
 
-# --- 1. ALWAYS-ALIVE WEB SERVER ---
+# --- 1. IMMORTAL WEB SERVER (RENDER SHIELD) ---
 app = Flask(__name__)
 @app.route('/')
 def home():
-    return "ETERNA BOT IS FULLY AWAKE"
+    return "ETERNA SUPREME CORE IS ACTIVE."
 
 def run_web_server():
     port = int(os.environ.get('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
 
-# --- 2. SENTIMENT & ANALYSIS ENGINE ---
+# --- 2. THE GOD-LEVEL BRAIN (Volume + Momentum + Sentiment) ---
 def get_market_sentiment():
     try:
         response = requests.get("https://api.alternative.me/fng/", timeout=10).json()
@@ -29,42 +29,67 @@ def get_market_sentiment():
     except:
         return 50
 
-def get_advanced_signal(pair):
-    url = f"https://public.coindcx.com/market_data/candles?pair={pair.replace('/', '').lower()}&interval=5m&limit=20"
+def get_supreme_signal(pair):
+    url = f"https://public.coindcx.com/market_data/candles?pair={pair.replace('/', '').lower()}&interval=15m&limit=30"
     try:
         data = requests.get(url, timeout=10).json()
         df = pd.DataFrame(data)
-        prices = df['close'].astype(float)
         
-        rsi = 100 - (100 / (1 + (prices.diff().clip(lower=0).rolling(14).mean() / -prices.diff().clip(upper=0).rolling(14).mean())))
-        ema = prices.ewm(span=20, adjust=False).mean()
+        df['close'] = df['close'].astype(float)
+        df['volume'] = df['volume'].astype(float)
+        
+        # Advanced Indicators
+        delta = df['close'].diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=14).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=14).mean()
+        rs = gain / loss
+        df['rsi'] = 100 - (100 / (1 + rs))
+        
+        df['ema_20'] = df['close'].ewm(span=20, adjust=False).mean()
+        
+        # Volume Anomaly Detection (Is it a real move or fake?)
+        avg_volume = df['volume'].rolling(window=20).mean().iloc[-1]
+        current_volume = df['volume'].iloc[-1]
+        volume_spike = current_volume > (avg_volume * 1.5) # Volume must be 50% higher than usual
+        
+        current_price = df['close'].iloc[-1]
+        current_rsi = df['rsi'].iloc[-1]
+        ema_20 = df['ema_20'].iloc[-1]
         sentiment = get_market_sentiment()
         
-        if rsi.iloc[-1] < 35 and prices.iloc[-1] > ema.iloc[-1] and sentiment > 25:
-            return f"⚡ GOD-BUY | RSI: {rsi.iloc[-1]:.1f} | Sentiment: {sentiment}", "BUY"
-        elif rsi.iloc[-1] > 65 and prices.iloc[-1] < ema.iloc[-1] and sentiment < 75:
-            return f"⚠️ GOD-SELL | RSI: {rsi.iloc[-1]:.1f} | Sentiment: {sentiment}", "SELL"
-    except:
+        # SILENT SNIPER LOGIC (Ultra-Strict)
+        if current_rsi < 30 and current_price > ema_20 and volume_spike and sentiment > 20:
+            return f"🟢 GOD-BUY CONFIRMED\n💰 {pair} @ ${current_price}\n📊 RSI: {current_rsi:.1f} | 📈 Volume Spike Detected!\n🧠 Sentiment: {sentiment} (Whales Accumulating)"
+            
+        elif current_rsi > 70 and current_price < ema_20 and volume_spike and sentiment < 80:
+            return f"🔴 GOD-SELL CONFIRMED\n💰 {pair} @ ${current_price}\n📊 RSI: {current_rsi:.1f} | 📉 Volume Spike Detected!\n🧠 Sentiment: {sentiment} (Whales Dumping)"
+            
+    except Exception as e:
+        print(f"Neural Error on {pair}: {e}")
         pass
-    return None, None
+    return None
 
-# --- 3. AUTO-PILOT HEARTBEAT ---
-def auto_pilot():
-    print("🚀 ETERNA V15 CORE ONLINE...")
+# --- 3. THE SILENT WATCHER (Auto-Pilot) ---
+def eterna_core():
+    print("🌌 ETERNA V16 SUPREME CORE ONLINE...")
+    bot.send_message(CHAT_ID, "⚡ ETERNA V16 LAUNCHED.\n\nSilent Sniper Mode: ACTIVE.\nVolume Filter: ACTIVE.\n\n(Aapko ab sirf God-Level verified signals hi milenge. Faltu messages band kar diye gaye hain.)")
+    
+    pairs = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT'] # Added more top coins for wider radar
+    
     while True:
         try:
-            # Heartbeat check
-            bot.send_message(CHAT_ID, "🌌 ETERNA STATUS: SYSTEM ONLINE & MONITORING...")
-            
-            for pair in ['BTC/USDT', 'ETH/USDT']:
-                signal, action = get_advanced_signal(pair)
+            for pair in pairs:
+                signal = get_supreme_signal(pair)
                 if signal:
-                    bot.send_message(CHAT_ID, f"🔔 **ETERNA SUPREME ALERT**\n🔹 {pair}: {signal}")
+                    bot.send_message(CHAT_ID, f"🔔 **ETERNA SUPREME ALERT** 🔔\n\n{signal}")
+                    time.sleep(300) # Prevents spamming the same signal
         except Exception as e:
-            print(f"⚠️ ETERNA Recovering: {e}")
-        time.sleep(600) # Har 10 minute mein heartbeat
+            print(f"⚠️ ETERNA Core Recovering from shock: {e}")
+            time.sleep(60) # Self-healing sleep
+            
+        time.sleep(300) # Scans market every 5 minutes completely silently
 
-# --- STARTING THE SYSTEMS ---
+# --- IGNITION SEQUENCE ---
 if __name__ == "__main__":
     try:
         bot.delete_webhook()
@@ -72,7 +97,7 @@ if __name__ == "__main__":
         pass
         
     threading.Thread(target=run_web_server, daemon=True).start()
-    threading.Thread(target=auto_pilot, daemon=True).start()
+    threading.Thread(target=eterna_core, daemon=True).start()
     
-    print("🌌 SYSTEM FULLY DEPLOYED & IMMORTAL.")
-    bot.infinity_polling(none_stop=True)
+    print("🌌 SYSTEM DEPLOYED. WAITING IN SHADOWS.")
+    bot.infinity_polling(none_stop=True, timeout=60, long_polling_timeout=60)
