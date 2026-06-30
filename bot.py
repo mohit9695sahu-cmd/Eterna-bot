@@ -12,7 +12,8 @@ API_TOKEN = '8774381712:AAGepJ_bG_ovvg9JfO6oHWU8lAXS_wugSe0'  # Apna original To
 CHAT_ID = '5126384362'
 bot = telebot.TeleBot(API_TOKEN)
 
-# --- CLEANUP (Code start hote hi execute hoga) ---
+# --- CLEANUP ---
+# Purane sessions hatane ke liye
 try:
     bot.remove_webhook()
     time.sleep(1)
@@ -32,7 +33,6 @@ def run_web_server():
 # --- SYSTEM MEMORY ---
 class SystemState:
     def __init__(self):
-        self.whale_alerts_count = 0
         self.last_heartbeat = time.time()
         self.heartbeat_interval = 10800 
 
@@ -89,6 +89,6 @@ if __name__ == "__main__":
     threading.Thread(target=eterna_heartbeat_core, daemon=True).start()
     threading.Thread(target=start_quantum_websocket, daemon=True).start()
     
-    # Final Polling (Conflict se bachne ke liye params update kiye)
+    # POLING FIX: skip_pending=True yahan conflict ko rokega
     print("🚀 ETERNA V18: SYSTEM LIVE.")
-    bot.infinity_polling(none_stop=True, interval=0, timeout=20, long_polling_timeout=20)
+    bot.infinity_polling(none_stop=True, skip_pending=True, interval=0, timeout=20)
