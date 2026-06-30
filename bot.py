@@ -1,3 +1,13 @@
+if __name__ == "__main__":
+    # Naya Cleanup Mechanism
+    try:
+        bot.remove_webhook()
+        # Telegram ko thoda time dein purana session hatane ke liye
+        time.sleep(2) 
+    except Exception as e:
+        print(f"Cleanup error: {e}")
+    
+    # ... baki ka code yahan rahega ...
 import telebot
 import requests
 import time
